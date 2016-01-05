@@ -50,12 +50,24 @@ Becase speaker's emial is unique, I use it as id for **Speaker**, like userid fo
 I add a property: **wishlist = ndb.StringProperty(repeated=True)** to the **Profile** to store the sessions that they are interested in.
 #### Task3
 ###### Two additional queries
-* **getSessionsWithHighlights**:  Searching for entities whose hightlights value contains at least one of those input hightlights.
-* **getSessionsWithSpeakerField** Searching for sessions which speaker's fields value contains at leat one of those input fields.
+* **getSessionsWithHighlights**:  Searching for entities whose hightlights value contains at least one of those input hightlights.    
+Reason: When people want to search sessions that they are interested in, searh for hightlights may be a goog choice.
+* **getSessionsWithSpeakerField** Searching for sessions which speaker's fields value contains at leat one of those input fields.    
+Reason: Image that people want attend the sessions that are in specific field for example Python, Ruby, Swift, etc . It's likely that some spakers who are the experts in these field will do these sessions, so using this query is good.
 
-###### query
-1. Fetch all the sessions no later then 7pm, then according to the results, exclude the  sessions that are not workshops. (The solutions is **task3** endpoints)
-2. Query for all the sessions no later then 7pm, then query for sessions that session's typeOfSession in ['NOT_SPECIFIED', 'LECTURE', 'KEYNODE']
+* **querySpeakers** Query for speakers though the spaker's name, gender, company, etc.
+Reasion: Users can search for speakers depand on their interest using this endpoint.
+
+<p style='color:red'>In the query getSessionsWithSpeakerField, I find where I was wrong. Because I didn't handle if speaker's field is not in the input values. Because I am a Chinese, not very good at Engilsh, I did't express myself clearly. Maybe I gave you wrong info. The endpoint getSessionsWithSpeakerField here is aim to find the sessions whose speaker's field is in the input values.</p>
+
+<p style='color:red'>I add the description for the problem with the provided query.</p>
+
+###### query problem
+
+<p style='color:red'>I improve the description.</p>
+
+First, I fetch all the sessions that before 7 pm, then in the for loop check the session if is    non-workshop if it is then append in a array, finally return the results.
+
 
 #### Task4
 Staticmethod method **_cacheFeaturedSpeaker** called with url **/tasks/set_featured_speaker**.

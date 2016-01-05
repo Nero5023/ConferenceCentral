@@ -140,6 +140,7 @@ class SessionForm(messages.Message):
     typeOfSession = messages.EnumField('SessionType', 5)
     date          = messages.StringField(6)
     startTime     = messages.StringField(7)
+    websafeKey    = messages.StringField(8)
 
 class SessionForms(messages.Message):
     """SessionForms -- mutiple Session outbound form message"""
@@ -164,11 +165,11 @@ class Speaker(ndb.Model):
 
 class SpeakerForm(messages.Message):
     """SpeakerForm -- SpeakerForm outbound form message"""
-    name    = messages.StringField(1, required=True)
-    email   = messages.StringField(2, required=True)
-    company = messages.StringField(3)
-    sex     = messages.StringField(4)
-    field   = messages.StringField(5, repeated=True)
+    name       = messages.StringField(1, required=True)
+    email      = messages.StringField(2, required=True)
+    company    = messages.StringField(3)
+    sex        = messages.StringField(4)
+    field      = messages.StringField(5, repeated=True)
 
 class SpeakerForms(messages.Message):
     """SpeakerForms -- mutiple Speaker outbound form message"""
