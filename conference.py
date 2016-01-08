@@ -692,9 +692,6 @@ class ConferenceApi(remote.Service):
         data = {field.name: getattr(request, field.name) for field in request.all_fields()}
         del data['websafeConferenceKey']
         del data['websafeKey']
-        reponse = SessionForm()
-        for field in reponse.all_fields():
-            setattr(reponse, field.name, getattr(request, field.name))
 
         for df in SESSION_DEFAULTS:
             if data[df] in (None, []):
@@ -721,7 +718,7 @@ class ConferenceApi(remote.Service):
 
         taskqueue.add(params={'speaker_email': request.speaker, 
             'wsck': request.websafeConferenceKey}, url = '/tasks/set_featured_speaker')
-        return reponse
+        return self._copySessionToForm(s_key.get())
 
     def _copySessionToForm(self, session):
         '''Copy relevant fields from Session to SessionForm.'''
@@ -732,10 +729,9 @@ class ConferenceApi(remote.Service):
                     setattr(s_form, field.name, str(getattr(session, field.name)))
                 elif field.name == 'typeOfSession':
                     setattr(s_form, field.name, getattr(SessionType, getattr(session, field.name)))
-                elif field.name == 'websafeKey':
-                    setattr(s_form, field.name, session.key.urlsafe())
                 else:
                     setattr(s_form, field.name, getattr(session, field.name))
+        setattr(s_form, 'websafeKey', session.key.urlsafe())
         s_form.check_initialized()
         return s_form
 
@@ -762,8 +758,8 @@ class ConferenceApi(remote.Service):
         )
 
     @endpoints.method(CON_SES_TYPE_GET_REQUEST, SessionForms,
-            path='conference/sessions/querybytpye', 
-            http_method='POST', name='getConferenceSessionsByType')
+            path='conference/sessions/query/type/{typeOfSession}', 
+            http_method='GET', name='getConferenceSessionsByType')
     def getConferenceSessionsByType(self, request):
         '''Return all sessions of a specified type'''
         c_key = ndb.Key(urlsafe=request.websafeConferenceKey)
@@ -888,12 +884,20 @@ class ConferenceApi(remote.Service):
             path='session/task3', http_method='POST',
             name='task3')
     def task3(self, request):
+        '''
+            This query is for the task3:Query Problem
+            Args:
+                have no input info
+            Return:
+                a list of sessions in which each session 
+                    is not workshop and start before 7:00pm
+        '''
         aim_time = time(19)
         sessions = Session.query(Session.startTime < aim_time)
         result_sessions = []
-        for session in sessions:
-            if session.typeOfSession != 'WORKSHOP' and session.startTime != None:
-                result_sessions.append(session)
+        result_sessions = [session for session in sessions if 
+                                session.typeOfSession != 'WORKSHOP' and
+                                session.startTime != None]
         return SessionForms(
             items=[self._copySessionToForm(session) for session in result_sessions]
         )
@@ -941,7 +945,6 @@ class ConferenceApi(remote.Service):
             featuredStr += featuredInfo
         # Set memcache
         memcache.set(MEMCACHE_FEATUREDSPEAKER_KEY, featuredStr)
-        return 
 
     @endpoints.method(message_types.VoidMessage, StringMessage,
             path='featuredspeaker', name='getFeaturedSpeaker')
