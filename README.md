@@ -58,7 +58,9 @@ I add a property: **wishlist = ndb.StringProperty(repeated=True)** to the **Prof
 
 ###### Query problem
 
-
+###### Reason for the problem with this query
+This query will uses a inequality filter for two different properties, one for Session.typeOfSession != Workshop and another for Session.startTime < 7p.m., it is a query restrictions on DataStore. Reference:[Udacity Course](https://www.udacity.com/course/viewer#!/c-ud858-nd/l-3839678726/m-1497718606)
+###### Solutions
 First, I fetch all the sessions that before 7 pm, then in the for loop check the session if is    non-workshop if it is then append in a array, finally return the results.
 
 Detailed implementation is in the `conference.py` `taks3` method.
